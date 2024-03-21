@@ -1,4 +1,7 @@
 app-config:
   llm: 'mistralai/Mixtral-8x7B-Instruct-v0.1'
-  huggingface-hub-token: ''
-  device: 'cpu'
+  huggingface-hub-token: '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'
+  prompt_template: 'prompts/prompt.txt'
+  log_prompts: false
+  log_llm_responses: false
+  show_sentence: false
