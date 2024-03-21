@@ -8,6 +8,7 @@ class Config:
     log_prompts: bool
     log_llm_responses: bool
     show_sentence: bool
+    show_responses_analisys: bool
 
     def __init__(
             self,
@@ -16,7 +17,8 @@ class Config:
             prompt_template: str,
             log_prompts: bool,
             log_llm_responses: bool,
-            show_sentence: bool
+            show_sentence: bool,
+            show_responses_analisys: bool
     ):
         self.llm = llm
         self.huggingface_hub_token = token
@@ -24,6 +26,7 @@ class Config:
         self.log_prompts = log_prompts
         self.log_llm_responses = log_llm_responses
         self.show_sentence = show_sentence
+        self.show_responses_analisys = show_responses_analisys
 
 
 def load_config(file_path: str) -> Config:
@@ -36,5 +39,6 @@ def load_config(file_path: str) -> Config:
         config_dict['prompt_template'],
         config_dict['log_prompts'],
         config_dict['log_llm_responses'],
-        config_dict['show_sentence']
+        config_dict['show_sentence'],
+        config_dict['show_responses_analisys']
     )
