@@ -1,0 +1,4 @@
+app-config:
+  llm: 'mistralai/Mixtral-8x7B-Instruct-v0.1'
+  huggingface-hub-token: ''
+  device: 'cpu'
