@@ -2,6 +2,7 @@ import pandas as pd
 from rich.progress import Progress
 from huggingface_hub import InferenceClient
 import os
+import re
 
 from city_prediction.config import load_config, Config
 
@@ -28,8 +29,7 @@ class CityPredictor:
     def get_city(self, prompt_template: str, message: str) -> str:
         prompt = self.create_llm_prompt(prompt_template, message)
         response = self.llm.text_generation(
-            prompt, do_sample=False, max_new_tokens=20, stop_sequences=['.']).strip()
-        response = response.replace("Ответ:", "")
+            prompt, do_sample=False, max_new_tokens=30, stop_sequences=['.']).strip()
 
         if self.show_sentence:
             print(f'[SENTENCE]{message}\n')
@@ -40,6 +40,12 @@ class CityPredictor:
         if self.log_llm_responses:
             print(f'[LLM RESPONSE]: {response}\n\n')
 
+        response = response.replace("Ответ: ", "")
+
+        if '(' in response:  # for second prompt
+            m = re.search(r"\(([А-Яа-я- ]+)\)", response)
+            if m:
+                response = m.group(1)
         return response
 
     def predict_cities(self) -> None:
