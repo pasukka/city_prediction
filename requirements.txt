@@ -1,2 +1,0 @@
-rich
-huggingface_hub
