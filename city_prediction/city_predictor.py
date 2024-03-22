@@ -3,6 +3,7 @@ from rich.progress import Progress
 from huggingface_hub import InferenceClient
 import os
 import re
+from tabulate import tabulate
 
 from city_prediction.config import load_config, Config
 
@@ -17,8 +18,8 @@ class CityPredictor:
 
     def __init__(self, filepath: str):
         self.filepath = filepath
-        self.result = 'result_data.csv'
-        self.output = 'output_data.csv'
+        self.answers = 'answers.csv'
+        self.result = 'result.csv'
 
     def create_llm_prompt(self, prompt_template: str, text: str) -> str:
         message = (f'Текст: {text}\n')
@@ -50,12 +51,11 @@ class CityPredictor:
 
     def predict_cities(self) -> None:
         start = 0
-        self.ouput = 'output_' + self.filepath
-        if not os.path.exists(self.ouput):
+        if not os.path.exists(self.result):
             df = pd.DataFrame(columns=['message', 'city'])
-            df.to_csv(self.ouput)
+            df.to_csv(self.result)
         else:
-            start = len(pd.read_csv(self.ouput))
+            start = len(pd.read_csv(self.result))
 
         self.llm = InferenceClient(model=self.model,
                                    timeout=15,
@@ -80,15 +80,17 @@ class CityPredictor:
                 df = pd.DataFrame({'message': [message],
                                   'city': [city]})
                 df.index = [ind,]
-                df.to_csv(self.ouput, mode='a', header=False)
+                df.to_csv(self.result, mode='a', header=False)
 
     def analize(self, number_of_messages) -> None:
         if self.show_responses_analisys:
-            df1 = pd.read_csv(self.output)
-            df2 = pd.read_csv(self.result)
-            common_number = df1['city']. isin(df2['city']).value_counts()
-            print(
-                f'[ANALYSIS OF MODEL RESPONSES]:\n{common_number/number_of_messages}')
+            df1 = pd.read_csv(self.result)
+            df2 = pd.read_csv(self.answers)
+            common_number = df1['city']. isin (df2['city']).value_counts()
+            table = [["filename", "sentences number"], ["result.csv", len(df1)], ["answers.csv", len(df2)]]
+            print(tabulate(table, headers='firstrow'))
+            print(f'\n[ANALYSIS OF MODEL RESPONSES]:')
+            print(f'column: {common_number/number_of_messages}')
 
     def __call__(self):
         config = load_config('config.yml')
