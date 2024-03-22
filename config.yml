@@ -6,3 +6,4 @@ app-config:
   log_llm_responses: false
   show_sentence: false
   show_responses_analisys: true
+  show_differences: true
