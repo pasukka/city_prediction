@@ -92,7 +92,7 @@ class CityPredictor:
             res = df1.compare(df2)
             print(f'Accuracy: {(len(df2)-len(res))/len(df2)}')
 
-        if self.show_differences:
+        if self.show_differences and len(res) > 0:
             res.columns = ['wrong result', 'real answer']
             print(f'\n{res}')
 
