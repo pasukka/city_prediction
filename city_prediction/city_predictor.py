@@ -82,15 +82,19 @@ class CityPredictor:
                 df.index = [ind,]
                 df.to_csv(self.result, mode='a', header=False)
 
-    def analize(self, number_of_messages) -> None:
+    def analize(self) -> None:
         if self.show_responses_analisys:
             df1 = pd.read_csv(self.result)
             df2 = pd.read_csv(self.answers)
-            common_number = df1['city']. isin (df2['city']).value_counts()
             table = [["filename", "sentences number"], ["result.csv", len(df1)], ["answers.csv", len(df2)]]
             print(tabulate(table, headers='firstrow'))
             print(f'\n[ANALYSIS OF MODEL RESPONSES]:')
-            print(f'column: {common_number/number_of_messages}')
+            res = df1.compare(df2)
+            print(f'Accuracy: {(len(df2)-len(res))/len(df2)}')
+
+        if self.show_differences:
+            res.columns = ['wrong result', 'real answer']
+            print(f'\n{res}')
 
     def __call__(self):
         config = load_config('config.yml')
@@ -104,6 +108,7 @@ class CityPredictor:
         self.prompt_template_path = config.prompt_template
         self.show_sentence = config.show_sentence
         self.show_responses_analisys = config.show_responses_analisys
+        self.show_differences = config.show_differences
 
         self.predict_cities()
-        self.analize(len(df))
+        self.analize()
