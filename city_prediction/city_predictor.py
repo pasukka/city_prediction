@@ -64,10 +64,10 @@ class CityPredictor:
             prompt_template = f.read().strip()
 
         total_sentences = len(self.message_list)
-        label = start + 1 if start < total_sentences else start
+        analized_sentences = start + 1 if start < total_sentences else start
         with Progress() as progress:
             sentence_task = progress.add_task(
-                description=f'[green]Sentence {label}/{total_sentences}',
+                description=f'[green]Sentence {analized_sentences}/{total_sentences}',
                 total=total_sentences-start
             )
             for ind in range(start, total_sentences):
@@ -78,7 +78,7 @@ class CityPredictor:
                                 description=f'[green]Sentence {ind+1}/{total_sentences}')
 
                 df = pd.DataFrame({'message': [message],
-                                  'city': [city]})
+                                   'city': [city]})
                 df.index = [ind,]
                 df.to_csv(self.result, mode='a', header=False)
 
@@ -86,7 +86,9 @@ class CityPredictor:
         if self.show_responses_analisys:
             df1 = pd.read_csv(self.result)
             df2 = pd.read_csv(self.answers)
-            table = [["filename", "sentences number"], ["result.csv", len(df1)], ["answers.csv", len(df2)]]
+            table = [["filename", "sentences number"],
+                     ["result.csv", len(df1)],
+                     ["answers.csv", len(df2)]]
             print(tabulate(table, headers='firstrow'))
             print(f'\n[ANALYSIS OF MODEL RESPONSES]:')
             res = df1.compare(df2)
@@ -99,10 +101,9 @@ class CityPredictor:
     def __call__(self):
         config = load_config('config.yml')
         df = pd.read_csv(self.filepath)
+        self.message_list = df['message']
         self.model = config.llm
         self.huggingface_hub_token = config.huggingface_hub_token
-
-        self.message_list = df['message']
         self.log_prompts = config.log_prompts
         self.log_llm_responses = config.log_llm_responses
         self.prompt_template_path = config.prompt_template
