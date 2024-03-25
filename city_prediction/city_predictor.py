@@ -58,7 +58,7 @@ class CityPredictor:
             start = len(pd.read_csv(self.result))
 
         self.llm = InferenceClient(model=self.model,
-                                   timeout=15,
+                                   timeout=8,
                                    token=self.huggingface_hub_token)
         with open(self.prompt_template_path, 'r', encoding='utf-8') as f:
             prompt_template = f.read().strip()
